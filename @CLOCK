@@ -1,0 +1,48 @@
+/*  REXX PROGRAM FOR DRAWING GDDM CLOCK */
+/* PROGRAM BY MACIEKSOFT */
+ADDRESS LINK 'GDDMREXX INIT' /* initialize GDDM */
+ADDRESS GDDM /* we are talking to GDDM */
+'GSUWIN 0 100 0 100' /* create window for graphics, 100 by 100 pixels */
+DO UNTIL (PFK == 3) /* redraw clock until PF03 pressed */
+ CALL DRAWCLK /* call the rountine to draw a clock */
+ 'ASREAD . .PFK .' /* send data to terminal, check which PF key was pressed */
+END
+ADDRESS LINK 'GDDMREXX TERM' /* terminate GDDM */
+EXIT /* terminate the program */
+DRAWCLK:
+ 'GSCLR' /* clear the graphics screen */
+ HOU = TIME('M') / 60 // 12 * 0.5236 /* this is position of hour hand in radian */
+ MINU = TIME('M') // 60 * 0.1047 /* same there by for minute hand */
+ XHOU = SIN(HOU) * 15 + 50; YHOU = COS(HOU) * 15 + 50 /* X and Y coordinates of hour hand */
+ XMINU = SIN(MINU) * 20 + 50; YMINU = COS(MINU) * 20 + 50 /* X and Y coordinates for minute hand */
+ DO I = 1 TO 12 /* draw the 12 tick marks around the clock */
+  LNEX = SIN(I * 0.5236) * 21 + 50; LNEY = COS(I * 0.5236) * 21 + 50 /* calculate beginning of tick mark */
+  'GSMOVE .LNEX .LNEY' /* move to position */
+  LNEX = SIN(I * 0.5236) * 23 + 50; LNEY = COS(I * 0.5236) * 23 + 50 /* same for the end of tick mark */
+  'GSLINE .LNEX .LNEY' /* draw the line to */
+ END
+ 'GSLW 2' /* set line thickness to 2 */
+ 'GSMOVE 30 30'; 'GSARC 50 50 360' /* draw the clock outline (draw circle) */
+ 'GSCOL 6'; 'GSMOVE 50 50'; 'GSLINE .XMINU .YMINU' /* move to the center of the clock and draw minute hand */
+ 'GSCOL 2'; 'GSMOVE 50 50'; 'GSLINE .XHOU .YHOU' /* same for hour hand */
+ 'GSCOL 7' /* white color (7) for the text */
+ TME = TIME(); DTE = DATE('E') /* get time and date in european format (DD.MM.YY) */
+ 'GSCM 3'; 'GSCB 3 3'; 'GSCHAR 38 12 . .TME' /* put time as text on the screen */
+ 'GSCHAR 38 6 . .DTE' /* same thing but for date */
+RETURN
+/* TRIGONOMETRY FUNCTIONS BELOW */
+/* BECAUSE SOMEONE THOUGHT THAT THEY ARE NOT NEEDED BY DEFAULT IN REXX */
+R2R:  RETURN ARG(1) // (PI() *2)
+COS:  PROCEDURE; PARSE ARG X; X= R2R(X); IF X=0 THEN RETURN 1; A= ABS(X)
+      NUMERIC FUZZ MIN(6, DIGITS() - 3); IF A=PI THEN RETURN -1; PIH= PI * .5
+      IF A=PIH ! A=PIH*3 THEN RETURN 0; PIT= PI/3; IF A=PIT THEN RETURN .5
+      IF A=PIT + PIT THEN RETURN -.5; RETURN .SINCOS(1, -1)
+SIN:  PROCEDURE; ARG X;X=R2R(X);IF X=0 THEN RETURN 0;NUMERIC FUZZ MIN(5,MAX(1,DIGITS()-3))
+      IF X=PI*.5 THEN RETURN 1; IF X==PI * 1.5  THEN RETURN -1
+      IF ABS(X)=PI THEN RETURN 0; RETURN .SINCOS(X,1)
+.SINCOS: PARSE ARG Z 1 _,I; Q= X*X
+         DO K=2 BY 2 UNTIL P=Z; P= Z; _= - _ * Q / (K * (K+I) ); Z= Z + _; END
+         RETURN Z
+PI:  PI= 3.1415926535897932384626433832795028841971693993751058209749445923078164062862
+     RETURN PI
+
