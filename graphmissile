@@ -1,0 +1,35 @@
+/*  REXX PROGRAM FOR SHOWING A GRAPH USING GDDM-REXX AND GDDM-PGF */
+ADDRESS LINK 'GDDMREXX INIT'
+ADDRESS GDDM
+TSA = "IR GUIDED MISSILE SEEKER GIMBAL LIMIT COMPARISION"
+'CHHEAD 60 .TSA' /* set heading text */
+'CHHATT 1 6' /* heading text color */
+TSA = "MISSILE TYPE"
+'CHXTTL 12 .TSA' /* X axis title */
+'CHXTAT 1 2' /* X axis title color */
+'CHXLAT 1 4' /* X axis labels color */
+TSA = "SEEKR GIMBAL LIMIT (DEG)"
+'CHYTTL 30 .TSA' /* Y axis title */
+'CHYTAT 1 2' /* colors again for axis title and labels */
+'CHYLAT 1 4'
+LB1 = "AIM-9L"
+LB2 = "AIM-9M"
+LB3 = "AIM-9X"
+LB4 = " R-60M"
+LB5 = " R-73M"
+LB6 = " R-74M"
+LB7 = " R-23T"
+LB8 = " R-40T"
+'CHXLAB 8 6 .LB' /* 8 labels 6 chars long */
+DTA1.1 = 40
+DTA1.2 = 40
+DTA1.3 = 90
+DTA1.4 = 40
+DTA1.5 = 60
+DTA1.6 = 75
+DTA1.7 = 60
+DTA1.8 = 40
+'CHBAR 1 8 .DTA' /* here goes the data, 8 values */
+'ASREAD . . .' /* send to terminal and wait for ENTER key */
+ADDRESS LINK 'GDDMREXX TERM'
+EXIT
